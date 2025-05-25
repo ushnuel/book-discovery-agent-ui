@@ -51,6 +51,12 @@ export const usePoll = (
         const { books, status } = response.data;
         const result = { books, status };
 
+        if (status === "failed") {
+          setIsPolling(false);
+          onError?.(new Error("Please try again later"));
+          return;
+        }
+
         setData(result);
         onSuccess?.(result);
 
@@ -60,7 +66,8 @@ export const usePoll = (
         }
       } catch (err) {
         if (!isMounted) return;
-        const error = err instanceof Error ? err : new Error("Polling failed");
+        const error =
+          err instanceof Error ? err : new Error("Failed to fetch books");
         setError(error);
         onError?.(error);
         setIsPolling(false);
